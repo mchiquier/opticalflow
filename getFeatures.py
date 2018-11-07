@@ -1,6 +1,6 @@
 '''getFeatures.py file  '''
 import cv2
-from skimage import feature.corner_shi_tomasi
+from skimage.feature import corner_shi_tomasi
 
 def getFeatures(img, bbox) : 
     image_response = feature.corner_shi_tomasi(img)

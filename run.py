@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
-import getFeatures
 from scipy import misc 
+
+import getFeatures
+from boundingBox import getBoundingBox
 
 easy = './Easy.mp4'
 medium = './Medium.mp4'
@@ -24,4 +26,13 @@ while success:
 
 video.release()
 
+# Bounding box + feature detector
+image = cv2.imread('first_frame.png')
+contour_image = cv2.imread('contour1.png', cv2.IMREAD_GRAYSCALE)
+image, bbox_corners = getBoundingBox(image, contour_image)
+
+print(bbox_corners)
+cv2.imshow("Image:", image)
+if cv2.waitKey(0) & 0xff == 27:
+	cv2.destroyAllWindows()
 
