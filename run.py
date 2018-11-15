@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from scipy import misc 
 
-import getFeatures
+import getFeatures as gf
 from boundingBox import getBoundingBox
 
 easy = './Easy.mp4'
@@ -31,7 +31,10 @@ image = cv2.imread('first_frame.png')
 contour_image = cv2.imread('contour1.png', cv2.IMREAD_GRAYSCALE)
 image, bbox_corners = getBoundingBox(image, contour_image)
 
-print(bbox_corners)
+features = gf.getFeatures(image, bbox_corners).astype(int)
+print(image.shape)
+image[features[:,1],features[:,0],:] = (0,0,255)
+# print(bbox_corners)
 cv2.imshow("Image:", image)
 if cv2.waitKey(0) & 0xff == 27:
 	cv2.destroyAllWindows()
