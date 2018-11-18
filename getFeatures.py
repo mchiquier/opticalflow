@@ -4,7 +4,7 @@ import cv2
 # from skimage.feature import corner_shi_tomasi
 
 def getFeatures(img, bbox) : 
-	N = 25
+	N = 1
 	F = bbox.shape[0]
 	matX = np.zeros((N,F))
 	matY = np.zeros((N,F))
