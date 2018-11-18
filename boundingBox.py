@@ -11,19 +11,27 @@ import cv2
  - input: contour_image - binary image denoting contour
 '''
 def getBoundingBox(image, contour_image):
+    contour_map,_,_ = cv2.findContours(contour_image, 1, 2)
+    print(contour_map)
+    num_box = contour_map.shape[0]
+    print(contour_map.shape)
+    # Find corner coordinates of each bounding box
+    coordinates = np.zeros((num_box,4,2))
+    for i in range(num_box):
 
-    # Get bounding box from contour map
-    (x, y, w, h) = cv2.boundingRect(contour_image)
+        # Get bounding box from contour map
+        (x, y, w, h) = cv2.boundingRect(contour_map[i])
 
-    # Draw bounding box onto the original image
-    cv2.rectangle(image, (x,y) ,(x+w, y+h), (0,255,0), 2)
+        # Draw bounding box onto the original image
+        cv2.rectangle(image, (x,y) ,(x+w, y+h), (0,255,0), 2)
 
-    # Generate coordinates of the bounding rectangle and return
-    coordinates = np.array([
-        [x, y],
-        [x+w, y],
-        [x, y+h],
-        [x+w, y+h]
-    ])
+        # Generate coordinates of current bounding rectangle and save
+        this_box = np.array([
+            [x, y],
+            [x+w, y],
+            [x, y+h],
+            [x+w, y+h]
+        ])
+        coordinates[i,:,:] = this_box
 
     return image, coordinates
