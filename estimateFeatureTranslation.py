@@ -31,7 +31,8 @@ def estimateFeatureTranslation(startX, startY, Ix, Iy, img1, img2):
 		newImg = interp.interp2(img1, meshx, meshy)
 		diff = np.linalg.norm(img2_window - newImg)
 		if (prev_diff-diff) < 10e-6:
-			return np.round(startX + su), np.round(startY + sv)
+			# return np.round(startX + su), np.round(startY + sv)
+			return np.round(startX + uv[0]), np.round(startY + uv[1])
 		else:
 			su += uv[0]
 			sv += uv[1]
