@@ -1,6 +1,8 @@
 ''' applyGeometricTransformation '''
 
 import numpy as np
+from scipy.optimize import least_squares
+from skimage import transform
 
 '''
 	- (INPUT) startXs: N × F
@@ -22,20 +24,50 @@ def applyGeometricTransformation(startXs, startYs, newXs, newYs, bbox):
 
 	distance = np.zeros((N,F))
 	distance = np.sqrt(np.square(diff_x) + np.square(diff_y))
-	distance[np.where(startXs != -1)] = -1
+	distance[np.where(startXs == -1)] = -1
 
 	# Filter out outliers
-	threshold = 4
+	threshold = 10
 	where_outliers = np.where(distance >= threshold)
 
-	'''
-		From writeup:
-		In the above function, you should eliminate feature points if the distance from a point to the projection of its corresponding
-		point is greater than 4. You can play around with this value.
-	'''
+	startXs[where_outliers] = -1
+	startYs[where_outliers] = -1
+	newXs[where_outliers] = -1
+	newYs[where_outliers] = -1
 
-	# todo: filter out outliers and transform bboxs
+	# todo: filter out outliers
+	Xs = newXs
+	Ys = newYs
 
-	newbbox = bbox.copy()
-	return Xs, Ys, newbbox
+	''' Transform bounding boxes '''
+	new_bbox = np.zeros((F,4,2))
+	for f in range(F):
+		box = bbox[f,:,:]
+
+		# Get transform
+		this_start = np.stack(\
+			(np.ravel(startXs[np.where(startXs[:,f] != -1),f]),
+			np.ravel(startYs[np.where(startYs[:,f] != -1),f])), axis=1
+		)
+		this_new = np.stack(\
+			(np.ravel(newXs[np.where(newXs[:,f] != -1),f]),
+			np.ravel(newYs[np.where(newYs[:,f] != -1),f])), axis=1
+		)
+		tform = transform.estimate_transform('affine', this_start, this_new)
+
+		# Transform the bbox
+		new_bbox[f,:,:] = new_box = tform(box)
+		# print("old=\n",box)
+		# print("new=\n",new_bbox[f].astype(int))
+
+	new_bbox = np.round(new_bbox).astype(int)
+	return Xs, Ys, new_bbox
+
+
+
+
+
+
+
+
 

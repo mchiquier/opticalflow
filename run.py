@@ -17,8 +17,8 @@ easy_cnt = 'contour-easy.png'
 medium_cnt = 'contour-med.png'
 hard_cnt = 'contour-hard.png'
 
-video = cv2.VideoCapture(medium)
-contour_image = cv2.imread(medium_cnt, cv2.IMREAD_GRAYSCALE)
+video = cv2.VideoCapture(easy)
+contour_image = cv2.imread(easy_cnt, cv2.IMREAD_GRAYSCALE)
 
 
 w =int(video.get(3))
@@ -38,7 +38,7 @@ xs,ys = gf.getFeatures(prev_grayframe, all_bbox_corners)
 print(all_bbox_corners)
 x,y,xw,yh = bbox_corners[0,0],bbox_corners[0,1],bbox_corners[3,0],bbox_corners[3,1]
 
-count = 0 	# to print out the iteration; delete later
+count = 1 	# to count out the iteration
 while 1:
 	print("iter", count)
 	prev_grayframe = cv2.cvtColor(prevframe, cv2.COLOR_BGR2GRAY)
@@ -46,23 +46,33 @@ while 1:
 	success, frame = video.read()
 	if not success: break
 	grayframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+	# Every 10 frames, get new features
+	if count % 20 == 0:
+		xs, ys = gf.getFeatures(grayframe, all_bbox_corners)
+
 	newXs, newYs = eat.estimateAllTranslation(xs, ys, prevframe, frame)
 
 	finalXs, finalYs, final_bbox = applyGeometricTransformation(xs, ys, newXs, newYs, all_bbox_corners)
 
-	ind = np.where(newXs != -1)
-	if newXs[ind].shape[0] > 0:
-		u,v = int(np.mean(newXs[ind]-xs[ind])),int(np.mean(newYs[ind]-ys[ind]))
-		x += u
-		xw += u
-		y += v
-		yh += v
+	# ind = np.where(newXs != -1)
+	# if newXs[ind].shape[0] > 0:
+	# 	u,v = int(np.mean(newXs[ind]-xs[ind])),int(np.mean(newYs[ind]-ys[ind]))
+	# 	x += u
+	# 	xw += u
+	# 	y += v
+	# 	yh += v
+
+	x  = final_bbox[0,0,0]
+	xw = final_bbox[0,3,0]
+	y  = final_bbox[0,0,1]
+	yw = final_bbox[0,3,1]
 	output = frame.copy()
 	cv2.rectangle(output, (x,y) ,(xw, yh), (0,255,0), 2)
 	out.write(output)
 
 	prevframe = frame.copy()
-	xs,ys = newXs, newYs
+	xs, ys, all_bbox_corners = finalXs, finalYs, final_bbox
 
 	count += 1
 print("done loop")

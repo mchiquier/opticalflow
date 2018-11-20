@@ -23,7 +23,7 @@ def estimateFeatureTranslation(startX, startY, Ix, Iy, img1, img2):
 		yt = np.sum(np.multiply(pIy,pIt))
 
 		b = - np.array([xt,yt]).transpose()
-		A = np.array([[xx,xy],[xy,yy]])+10e-6
+		A = np.array([[xx+10e-6,xy],[xy,yy+10e-6]])
 		uv = np.matmul(np.linalg.inv(A),b)
 
 		meshy,meshx = meshy+(uv[1]),meshx+(uv[0])
