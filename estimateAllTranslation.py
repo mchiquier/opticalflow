@@ -23,5 +23,6 @@ def estimateAllTranslation(startXs,startYs,img1,img2):
 			if startY < 5 or startX < 5 or startY >= H-5 or startX >= W-5: continue
 			newXs[feat,box],newYs[feat,box] = eft.estimateFeatureTranslation(startX, startY, Ix, Iy, gray_img1, gray_img2)
 	# print(newXs.transpose())
-	return newXs.astype(int), newYs.astype(int)
+	# return newXs.astype(int), newYs.astype(int)
+	return newXs, newYs
 	

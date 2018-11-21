@@ -56,9 +56,7 @@ def applyGeometricTransformation(startXs, startYs, newXs, newYs, bbox):
 		tform = transform.estimate_transform('affine', this_start, this_new)
 
 		# Transform the bbox
-		new_bbox[f,:,:] = new_box = tform(box)
-		# print("old=\n",box)
-		# print("new=\n",new_bbox[f].astype(int))
+		new_bbox[f,:,:] = tform(box)
 
 	new_bbox = np.round(new_bbox).astype(int)
 	return Xs, Ys, new_bbox

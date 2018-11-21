@@ -13,6 +13,9 @@ def getFeatures(img, bbox) :
 		# Get responsive locations within bounding box
 		gray = img[bbox[f,0,1]:bbox[f,2,1],bbox[f,0,0]:bbox[f,1,0]]
 		response = cv2.goodFeaturesToTrack(gray,N,0.01,10)
+
+		if (response is None):
+			return None, None
 		response = response.reshape((response.shape[0],2))
 
 		# [x y] response matrix; add top left corner to response position

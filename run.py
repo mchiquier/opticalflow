@@ -40,33 +40,26 @@ x,y,xw,yh = bbox_corners[0,0],bbox_corners[0,1],bbox_corners[3,0],bbox_corners[3
 
 count = 1 	# to count out the iteration
 while 1:
-	print("iter", count)
 	prev_grayframe = cv2.cvtColor(prevframe, cv2.COLOR_BGR2GRAY)
 
 	success, frame = video.read()
 	if not success: break
 	grayframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-	# Every 10 frames, get new features
-	if count % 20 == 0:
+	# Every 20 frames, get new features
+	if count % 8 == 0:
+		print("iter", count)
 		xs, ys = gf.getFeatures(grayframe, all_bbox_corners)
+		if xs is None: break
 
 	newXs, newYs = eat.estimateAllTranslation(xs, ys, prevframe, frame)
-
 	finalXs, finalYs, final_bbox = applyGeometricTransformation(xs, ys, newXs, newYs, all_bbox_corners)
 
-	# ind = np.where(newXs != -1)
-	# if newXs[ind].shape[0] > 0:
-	# 	u,v = int(np.mean(newXs[ind]-xs[ind])),int(np.mean(newYs[ind]-ys[ind]))
-	# 	x += u
-	# 	xw += u
-	# 	y += v
-	# 	yh += v
+	x  = int(np.round(final_bbox[0,0,0]))
+	xw = int(np.round(final_bbox[0,3,0]))
+	y  = int(np.round(final_bbox[0,0,1]))
+	yw = int(np.round(final_bbox[0,3,1]))
 
-	x  = final_bbox[0,0,0]
-	xw = final_bbox[0,3,0]
-	y  = final_bbox[0,0,1]
-	yw = final_bbox[0,3,1]
 	output = frame.copy()
 	cv2.rectangle(output, (x,y) ,(xw, yh), (0,255,0), 2)
 	out.write(output)
