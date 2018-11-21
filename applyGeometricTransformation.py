@@ -35,9 +35,9 @@ def applyGeometricTransformation(startXs, startYs, newXs, newYs, bbox):
 	newXs[where_outliers] = -1
 	newYs[where_outliers] = -1
 
-	# todo: filter out outliers
-	Xs = newXs
-	Ys = newYs
+	Xs, Ys = newXs, newYs
+	Xs = Xs[np.any(Xs != -1, axis=1)]
+	Ys = Ys[np.any(Ys != -1, axis=1)]
 
 	''' Transform bounding boxes '''
 	new_bbox = np.zeros((F,4,2))
@@ -53,12 +53,17 @@ def applyGeometricTransformation(startXs, startYs, newXs, newYs, bbox):
 			(np.ravel(newXs[np.where(newXs[:,f] != -1),f]),
 			np.ravel(newYs[np.where(newYs[:,f] != -1),f])), axis=1
 		)
+
+		# Break if all features are gone
+		if (this_start.shape[0] == 0 or this_new.shape[0] == 0):
+			return None, None, None
+
 		tform = transform.estimate_transform('affine', this_start, this_new)
 
 		# Transform the bbox
 		new_bbox[f,:,:] = tform(box)
 
-	new_bbox = np.round(new_bbox).astype(int)
+	#new_bbox = np.round(new_bbox).astype(int)
 	return Xs, Ys, new_bbox
 
 

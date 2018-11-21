@@ -33,7 +33,7 @@ def estimateFeatureTranslation(startX, startY, Ix, Iy, img1, img2):
 		if (prev_diff-diff) < 10e-6:
 			# return np.round(startX + su), np.round(startY + sv)
 			return startX + su, startY + sv
-			# return np.round(startX + uv[0]), np.round(startY + uv[1])
+			#return np.round(startX + uv[0]), np.round(startY + uv[1])
 		else:
 			su += uv[0]
 			sv += uv[1]
